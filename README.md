@@ -6,4 +6,4 @@ Entrega de trabajos del curso de Facility Location.
 
 Universidad Nacional de Cuyo
 
-!(https://ricardorpalma.github.io/FACY/)[https://ricardorpalma.github.io/FACY/]
+[https://ricardorpalma.github.io/FACY/]
