@@ -1,0 +1,80 @@
+---
+title: "Polígnos Voronoy"
+author: "Ricardo Palma"
+date: "1/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Con la biblioteca **ggvoronoi** podemos dibujar fácilmente mapas de calor de diagramas de Voronoi, con la ayuda de los paquetes como ggplot2 y otros visualizar los datos. Un diagrama de Voronoi dibuja las regiones vecinas más cercanas alrededor de un conjunto de puntos y, al especificar un argumento de relleno, podemos convertirlo en un mapa de calor. Las aplicaciones de los diagramas de Voronoi permiten:
+
+- encontrar el vecino más cercano a un punto dado
+- interpolar un conjunto de puntos sin utilizar un ráster
+- creando gráficos útiles y atractivos
+- ver el área de influencia de un punto respecto de otros
+
+```{r}
+library(ggvoronoi)
+set.seed(45056)
+x <- sample(1:200,100)
+y <- sample(1:200,100)
+points <- data.frame(x, y,
+                     distance = sqrt((x-100)^2 + (y-100)^2))
+circle <- data.frame(x = 100*(1+cos(seq(0, 2*pi, length.out = 2500))),
+                     y = 100*(1+sin(seq(0, 2*pi, length.out = 2500))),
+                     group = rep(1,2500))
+
+ggplot(points) +
+  geom_point(aes(x,y,color=distance)) +
+  geom_path(data=circle,aes(x,y,group=group))
+```
+
+Todos estos datos tienen un conjunto de coordenadas $x$ e $y$, junto con la distancia euclidiana desde el centro del círculo que usaremos para colorear el diagrama de Voronoi.
+
+*ggvoronoi()* puede usar este conjunto de puntos para trazar rápidamente un diagrama de Voronoi, trabajando con el marco ggplot2:
+
+```{r}
+ggplot(points) +
+  geom_voronoi(aes(x,y,fill=distance))
+```
+
+Además, podemos usar la función stat_voronoi directamente para especificar qué geom de ggplot 2 nos gustaría usar. Esto es más útil cuando estamos interesados en trazar solo los bordes del diagrama:
+
+```{r}
+ggplot(points,aes(x,y)) +
+  stat_voronoi(geom="path") +
+  geom_point()
+```
+
+Esta última trama trae a colación un punto interesante: el paquete deldir crea el diagrama de voronoi con un cuadro delimitador automático (¡de lo contrario sería infinitamente grande!). Pero podemos especificar nuestro propio cuadro delimitador para reducir o ampliar el área.
+
+El argumento de esquema debe tener estos parámetros:
+
+- la primera columna es x / longitud
+- la segunda columna es y / latitud
+- columna opcional "grupo"
+
+¡O puede alimentarlo con cualquier *SpatialPolygonsDataFrame!*
+
+Para este ejemplo, usaremos el círculo incluido con ggvoronoi.
+
+```{r}
+ggplot(data=points, aes(x=x, y=y, fill=distance)) + 
+  geom_voronoi(outline = circle)
+```
+
+¡Finalmente, puede agregar lo que quiera con su conocimiento de ggplot2!
+
+```{r}
+ggplot(points,aes(x,y)) +
+  geom_voronoi(aes(fill=distance),outline=circle,
+               color="#4dffb8",size=.125) +
+  scale_fill_gradient(low="#4dffb8",high="black",guide=F) +
+  theme_void() +
+  coord_fixed()
+```
+
+
