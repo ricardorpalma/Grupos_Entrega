@@ -2,7 +2,7 @@
 
 Entrega de trabajos del curso de Facility Location.
 
-** Di3** 
+**Di3** 
 
 Universidad Nacional de Cuyo
 
